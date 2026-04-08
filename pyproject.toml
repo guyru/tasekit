@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tasekit"
+dynamic = ["version"]
+description = "Fetch financial data from the Tel Aviv Stock Exchange (TASE)"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [{ name = "Guy Rutenberg" }]
+keywords = ["tase", "tel-aviv-stock-exchange", "finance", "stocks", "israel"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+dependencies = [
+    "requests>=2.28",
+    "pandas>=2.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/guyru/tasekit"
+Repository = "https://github.com/guyru/tasekit"
+Issues = "https://github.com/guyru/tasekit/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov",
+    "responses>=0.20",
+    "ruff",
+    "mypy",
+    "pandas-stubs",
+]
+
+[project.scripts]
+tasekit = "tasekit.cli:main"
+
+[tool.hatch.version]
+path = "src/tasekit/_version.py"
+
+[tool.ruff]
+line-length = 99
