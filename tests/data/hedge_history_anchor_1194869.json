@@ -1,0 +1,248 @@
+[
+  {
+    "fundId": "01194869",
+    "tradeDate": "2023-03-30T00:00:00",
+    "purchasePrice": 100,
+    "sellPrice": 100
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2023-04-27T00:00:00",
+    "purchasePrice": 99.44,
+    "sellPrice": 99.44
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2023-05-31T00:00:00",
+    "purchasePrice": 98.43,
+    "sellPrice": 98.43
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2023-06-29T00:00:00",
+    "purchasePrice": 99.26,
+    "sellPrice": 99.26
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2023-07-31T00:00:00",
+    "purchasePrice": 104.67,
+    "sellPrice": 103.73
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2023-08-31T00:00:00",
+    "purchasePrice": 107.5,
+    "sellPrice": 106
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2023-09-28T00:00:00",
+    "purchasePrice": 108.18,
+    "sellPrice": 106.54
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2023-10-31T00:00:00",
+    "purchasePrice": 103.39,
+    "sellPrice": 102.71
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2023-11-30T00:00:00",
+    "purchasePrice": 105.02,
+    "sellPrice": 104.01
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2023-12-28T00:00:00",
+    "purchasePrice": 109.39,
+    "sellPrice": 107.51
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2024-01-31T00:00:00",
+    "purchasePrice": 113.18,
+    "sellPrice": 112.42
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2024-02-29T00:00:00",
+    "purchasePrice": 121.08,
+    "sellPrice": 118.74
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2024-03-28T00:00:00",
+    "purchasePrice": 126.66,
+    "sellPrice": 123.21
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2024-04-30T00:00:00",
+    "purchasePrice": 120.77,
+    "sellPrice": 118.49
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2024-05-30T00:00:00",
+    "purchasePrice": 119.98,
+    "sellPrice": 117.86
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2024-06-27T00:00:00",
+    "purchasePrice": 116.52,
+    "sellPrice": 115.09
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2024-07-31T00:00:00",
+    "purchasePrice": 120.13,
+    "sellPrice": 117.98
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2024-08-29T00:00:00",
+    "purchasePrice": 127.07,
+    "sellPrice": 123.53
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2024-09-30T00:00:00",
+    "purchasePrice": 130.46,
+    "sellPrice": 126.25
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2024-10-31T00:00:00",
+    "purchasePrice": 139.02,
+    "sellPrice": 133.09
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2024-11-28T00:00:00",
+    "purchasePrice": 150.8,
+    "sellPrice": 142.52
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2024-12-31T00:00:00",
+    "purchasePrice": 162.15,
+    "sellPrice": 151.6
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2025-01-06T00:00:00",
+    "purchasePrice": 162.15,
+    "sellPrice": 162.15
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2025-01-30T00:00:00",
+    "purchasePrice": 169.48,
+    "sellPrice": 168.13
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2025-02-27T00:00:00",
+    "purchasePrice": 178.75,
+    "sellPrice": 175.43
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2025-03-31T00:00:00",
+    "purchasePrice": 175.01,
+    "sellPrice": 172.44
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2025-04-29T00:00:00",
+    "purchasePrice": 185.23,
+    "sellPrice": 180.61
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2025-05-29T00:00:00",
+    "purchasePrice": 199.79,
+    "sellPrice": 192.26
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2025-06-30T00:00:00",
+    "purchasePrice": 228.14,
+    "sellPrice": 214.94
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2025-07-31T00:00:00",
+    "purchasePrice": 236.4,
+    "sellPrice": 221.55
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2025-08-28T00:00:00",
+    "purchasePrice": 235.48,
+    "sellPrice": 220.82
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2025-09-30T00:00:00",
+    "purchasePrice": 243.73,
+    "sellPrice": 227.41
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2025-10-30T00:00:00",
+    "purchasePrice": 256.24,
+    "sellPrice": 237.42
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2025-11-27T00:00:00",
+    "purchasePrice": 273.07,
+    "sellPrice": 250.89
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2025-12-31T00:00:00",
+    "purchasePrice": 289.12,
+    "sellPrice": 263.73
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2026-01-01T00:00:00",
+    "purchasePrice": 289.12,
+    "sellPrice": 289.12
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2026-01-29T00:00:00",
+    "purchasePrice": 312.67,
+    "sellPrice": 307.96
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2026-02-26T00:00:00",
+    "purchasePrice": 330.29,
+    "sellPrice": 322.06
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2026-03-31T00:00:00",
+    "purchasePrice": 323.27,
+    "sellPrice": 316.44
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2026-04-30T00:00:00",
+    "purchasePrice": 349.94,
+    "sellPrice": 337.78
+  },
+  {
+    "fundId": "01194869",
+    "tradeDate": "2026-05-28T00:00:00",
+    "purchasePrice": 360.41,
+    "sellPrice": 346.15
+  }
+]

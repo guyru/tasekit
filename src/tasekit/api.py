@@ -9,6 +9,7 @@ from tasekit.constants import (
     DEFAULT_HEADERS,
     MAYA_BASE_URL,
     MAYA_HEADERS,
+    MAYA_HEDGE_MAX_PAGE_SIZE,
     PTYPE_DAYS_THRESHOLDS,
     PTYPE_MAP,
     MAX_HISTORY_YEARS,
@@ -246,8 +247,149 @@ class TaseClient:
         return self._post_csv(url, payload, extra_headers=MAYA_HEADERS)
 
     # ------------------------------------------------------------------
+    # Maya hedge-fund helpers (maya.tase.co.il)
+    # ------------------------------------------------------------------
+
+    def fetch_hedge_fund_list(
+        self, *, page_size: int = MAYA_HEDGE_MAX_PAGE_SIZE, page_number: int = 1
+    ) -> list[dict]:
+        """Fetch one page of the full mutual hedge-fund listing from Maya.
+
+        Backs the ``maya.tase.co.il/he/funds/hedge-funds`` page.  The endpoint
+        has no total-count envelope, so callers paginate until a short or empty
+        page is returned (see :meth:`HedgeFund.list`).
+
+        Args:
+            page_size: Rows per page (1–30; the API rejects larger values).
+            page_number: 1-based page number.
+
+        Returns:
+            List of fund row dicts (each with ``fundId``, ``name``,
+            ``managerName``, fees, ``assetValue``, ``classification``, etc.).
+
+        Raises:
+            TaseNetworkError: On HTTP failure or an API error envelope.
+        """
+        url = f"{MAYA_BASE_URL}/funds/hedge"
+        payload = {"pageSize": page_size, "pageNumber": page_number}
+        # Request English fund names (the project-wide convention), overriding
+        # the Maya default of he-IL.
+        headers = {**MAYA_HEADERS, "Accept-Language": "en-US"}
+        result = self._post_json(url, payload, extra_headers=headers)
+        if isinstance(result, dict):
+            # The API returns {"errors": {...}} instead of a list on bad input.
+            errors = result.get("errors", result)
+            raise TaseNetworkError(f"Hedge-fund list request failed: {errors}")
+        return result
+
+    def fetch_hedge_fund_detail(self, fund_id: str) -> dict:
+        """Fetch mutual hedge-fund details from the Maya API.
+
+        Args:
+            fund_id: Numeric fund ID (e.g. ``"1194141"``).
+
+        Returns:
+            Parsed JSON dict with fund metadata, fees, redemption schedule,
+            and ``securityRedemptions`` (the currently redeemable monthly
+            series with their net / gross prices).
+        """
+        url = f"{MAYA_BASE_URL}/funds/hedge/{fund_id}"
+        return self._get_json(url, headers=MAYA_HEADERS)
+
+    def fetch_hedge_fund_metadata(self, fund_id: str) -> dict:
+        """Fetch the history-page metadata for a mutual hedge fund.
+
+        Args:
+            fund_id: Numeric fund ID.
+
+        Returns:
+            Parsed JSON dict with ``fromDate``, ``toDate`` and
+            ``securities`` — the list of every monthly series
+            (``[{"key": securityId, "value": "name MM/YY"}]``).  The lowest
+            ``key`` is the oldest series, which acts as the fund's continuous
+            performance anchor.
+        """
+        url = f"{MAYA_BASE_URL}/funds/metadata/{fund_id}/history-hedge-fund"
+        return self._get_json(url, headers=MAYA_HEADERS)
+
+    def fetch_hedge_fund_history(
+        self,
+        fund_id: str,
+        *,
+        security_id: int | str | None = None,
+        from_date: str | None = None,
+        to_date: str | None = None,
+        page_size: int = MAYA_HEDGE_MAX_PAGE_SIZE,
+        page_number: int = 1,
+    ) -> list[dict]:
+        """Fetch hedge-fund price history from the Maya API.
+
+        Two modes:
+
+        * **Snapshot** — omit *security_id* to get the current redemption
+          snapshot: one row per live series, all at the latest pricing date.
+        * **Time series** — pass *security_id* (plus *from_date* / *to_date*)
+          to get that series' monthly history.
+
+        Each row is ``{fundId, tradeDate, purchasePrice (gross/GAV),
+        sellPrice (net/NAV)}``.
+
+        Args:
+            fund_id: Numeric fund ID.
+            security_id: A specific monthly series ID for time-series mode.
+            from_date: ISO date string ``"YYYY-MM-DDT00:00:00.000Z"``.
+            to_date: ISO date string.
+            page_size: Rows per page (1–30; the API rejects larger values).
+            page_number: 1-based page number.
+
+        Returns:
+            List of row dicts (possibly empty).
+
+        Raises:
+            TaseNetworkError: On HTTP failure or an API error envelope.
+        """
+        url = f"{MAYA_BASE_URL}/funds/hedge/{fund_id}/history"
+        payload: dict = {"pageSize": page_size, "pageNumber": page_number}
+        if security_id is not None:
+            payload["securityId"] = int(security_id)
+        if from_date is not None:
+            payload["fromDate"] = from_date
+        if to_date is not None:
+            payload["toDate"] = to_date
+
+        result = self._post_json(url, payload, extra_headers=MAYA_HEADERS)
+        if isinstance(result, dict):
+            # The API returns {"errors": {...}} instead of a list on bad input.
+            errors = result.get("errors", result)
+            raise TaseNetworkError(f"Hedge-fund history request failed: {errors}")
+        return result
+
+    # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
+
+    def _post_json(
+        self,
+        url: str,
+        payload: dict,
+        *,
+        extra_headers: dict[str, str] | None = None,
+    ) -> dict | list:
+        """POST *payload* as JSON expecting a JSON response."""
+        headers: dict[str, str] = {
+            "Content-Type": "application/json;charset=UTF-8",
+            "Accept": "application/json",
+        }
+        headers.update(extra_headers or MAYA_HEADERS)
+        try:
+            resp = self._session.post(url, json=payload, headers=headers)
+            resp.raise_for_status()
+        except requests.RequestException as exc:
+            raise TaseNetworkError(str(exc)) from exc
+        try:
+            return resp.json()
+        except ValueError as exc:
+            raise TaseNetworkError(f"Invalid JSON response: {exc}") from exc
 
     def _post_csv(
         self,

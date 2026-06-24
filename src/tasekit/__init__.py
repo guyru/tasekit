@@ -2,6 +2,7 @@
 
 from tasekit._version import __version__
 from tasekit.security import Security
+from tasekit.hedge_fund import HedgeFund
 from tasekit.index import Index
 from tasekit.exceptions import (
     TaseError,
@@ -44,6 +45,7 @@ def download(
 __all__ = [
     "__version__",
     "Security",
+    "HedgeFund",
     "Index",
     "download",
     "TaseError",

@@ -1,0 +1,38 @@
+[
+  {
+    "fundId": "01233857",
+    "tradeDate": "2026-05-28T00:00:00",
+    "purchasePrice": 360.41,
+    "sellPrice": 346.15
+  },
+  {
+    "fundId": "01235365",
+    "tradeDate": "2026-05-28T00:00:00",
+    "purchasePrice": 360.41,
+    "sellPrice": 350.86
+  },
+  {
+    "fundId": "01237262",
+    "tradeDate": "2026-05-28T00:00:00",
+    "purchasePrice": 360.41,
+    "sellPrice": 354.39
+  },
+  {
+    "fundId": "01238716",
+    "tradeDate": "2026-05-28T00:00:00",
+    "purchasePrice": 360.41,
+    "sellPrice": 352.98
+  },
+  {
+    "fundId": "01240100",
+    "tradeDate": "2026-05-28T00:00:00",
+    "purchasePrice": 360.41,
+    "sellPrice": 358.32
+  },
+  {
+    "fundId": "01242023",
+    "tradeDate": "2026-05-28T00:00:00",
+    "purchasePrice": 360.41,
+    "sellPrice": 360.41
+  }
+]

@@ -19,12 +19,13 @@ tasekit/
 │   ├── ENDPOINTS.md        # complete API endpoint catalog
 │   └── TODO.md             # roadmap and known issues
 ├── src/tasekit/            # library source (src layout)
-│   ├── __init__.py         # public API: Security, Index, download()
+│   ├── __init__.py         # public API: Security, HedgeFund, Index, download()
 │   ├── _version.py         # single source of version
 │   ├── api.py              # low-level HTTP client (TaseClient)
 │   ├── cli.py              # CLI entry point (argparse, unified history/info)
 │   ├── constants.py        # URLs, headers, pType maps, column name prefixes
 │   ├── exceptions.py       # TaseError hierarchy
+│   ├── hedge_fund.py       # HedgeFund class (mutual hedge funds, Maya)
 │   ├── index.py            # Index class (market indices)
 │   ├── parsers.py          # CSV/JSON response parsers
 │   └── security.py         # Security class (stocks, ETFs, bonds, mutual funds)
@@ -32,10 +33,11 @@ tasekit/
     ├── conftest.py         # shared fixtures
     ├── test_api.py
     ├── test_cli.py
+    ├── test_hedge_fund.py
     ├── test_index.py
     ├── test_parsers.py
     ├── test_security.py
-    └── data/               # sample CSV fixtures from real API responses
+    └── data/               # sample fixtures from real API responses (CSV + hedge_*.json)
 ```
 
 ## Key Design Decisions
@@ -55,7 +57,14 @@ tasekit/
   main TASE API first, then fall back to Maya for mutual funds.
 - **Unified CLI**: `tasekit history` and `tasekit info` auto-detect index
   (1–3 digit ID) vs security (6+ digit ID). `--etf` flag uses the ETF-specific
-  endpoint.
+  endpoint; `--hedge` routes to `HedgeFund`.
+- **Mutual hedge funds** (`HedgeFund`, Maya only): a new `securityId` is minted
+  monthly; fees accrue intra-year (net < gross) then crystallize at year-end by
+  converting holdings into the **oldest** series. The oldest series is the
+  continuous performance anchor; `add_hedge_fund_adj_close()` removes the
+  January reset jumps to build a net-of-fees total-return series. Not
+  auto-detectable from the main API, so it requires the explicit class/flag.
+  See `docs/HEDGE_FUNDS_PLAN.md`.
 - **Pandas DataFrames** are the native return type from `history()`.
 - **Security IDs** are normalised to zero-padded 8-digit strings internally.
 - **Index IDs** are short numeric strings (e.g. `"142"` for TA-35).
@@ -65,13 +74,16 @@ tasekit/
 ```bash
 uv venv .venv
 uv pip install -e ".[dev]"
-.venv/bin/python -m pytest tests/ -v     # run tests (163 tests)
+.venv/bin/python -m pytest tests/ -v     # run tests (205 tests)
 .venv/bin/ruff check src/ tests/         # lint
 uv run tasekit history 00604611          # smoke test (stock)
 uv run tasekit history 142 -d 30         # smoke test (index)
 uv run tasekit info 00604611             # smoke test (rich metadata)
 uv run tasekit info 5122627              # smoke test (mutual fund)
 uv run tasekit history 01144724 --etf    # smoke test (ETF with fund prices)
+uv run tasekit history 1194141 --hedge   # smoke test (hedge fund, net Adj Close)
+uv run tasekit info 1194141 --hedge      # smoke test (hedge fund metadata)
+uv run tasekit list --hedge              # smoke test (all hedge funds)
 ```
 
 Testing uses `responses` to mock HTTP calls. Every API method in `TaseClient`
@@ -105,6 +117,18 @@ User → Index.history()
 
 User → Index.info()
          └─ TaseClient.fetch_index_details()  → index/details
+
+User → HedgeFund.list()  (classmethod)
+         └─ TaseClient.fetch_hedge_fund_list(paginated) → funds/hedge (POST, en-US)
+              → parsers.parse_hedge_fund_list() → DataFrame (indexed by Fund ID)
+
+User → HedgeFund.performance() / .history()
+         ├─ TaseClient.fetch_hedge_fund_metadata()  → funds/metadata/{id}/history-hedge-fund (series list, anchor)
+         └─ TaseClient.fetch_hedge_fund_history(securityId=anchor, paginated) → funds/hedge/{id}/history
+              → parsers.parse_hedge_fund_history() → add_hedge_fund_adj_close() → DataFrame (Gross/Net/Adj Close)
+
+User → HedgeFund.info()
+         └─ TaseClient.fetch_hedge_fund_detail() → funds/hedge/{id}
 ```
 
 ### API Constraints

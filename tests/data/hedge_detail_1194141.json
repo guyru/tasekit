@@ -1,0 +1,190 @@
+{
+  "fundId": 1194141,
+  "name": "Harel Mul Str Mut He Fnd",
+  "longName": "Harel (4D) Multi-Strategy - Mutual Hedged Fund",
+  "fundType": "Hedge fund",
+  "fundTypeId": 6,
+  "isin": null,
+  "successFee": 20,
+  "redemptionFirstOrLast": null,
+  "redemptionPeriodName": null,
+  "redemptionOther": null,
+  "redemptionDays": 10,
+  "securityRedemptions": [
+    {
+      "securityId": 1242023,
+      "securityName": "05/26 LSTR MUHF",
+      "createdDate": "2026-05-28T00:00:00",
+      "beginDate": "2026-06-01T00:00:00",
+      "endDate": "2026-06-30T00:00:00",
+      "sendingMessageDeadline": "2026-06-16T00:00:00",
+      "nav": 360.41,
+      "gav": 360.41
+    },
+    {
+      "securityId": 1240100,
+      "securityName": "04/26 LSTR MUHF",
+      "createdDate": "2026-04-30T00:00:00",
+      "beginDate": "2026-06-01T00:00:00",
+      "endDate": "2026-06-30T00:00:00",
+      "sendingMessageDeadline": "2026-06-16T00:00:00",
+      "nav": 358.32,
+      "gav": 360.41
+    },
+    {
+      "securityId": 1238716,
+      "securityName": "03/26 LSTR MUHF",
+      "createdDate": "2026-03-31T00:00:00",
+      "beginDate": "2026-06-01T00:00:00",
+      "endDate": "2026-06-30T00:00:00",
+      "sendingMessageDeadline": "2026-06-16T00:00:00",
+      "nav": 352.98,
+      "gav": 360.41
+    },
+    {
+      "securityId": 1237262,
+      "securityName": "02/26 LSTR MUHF",
+      "createdDate": "2026-02-26T00:00:00",
+      "beginDate": "2026-06-01T00:00:00",
+      "endDate": "2026-06-30T00:00:00",
+      "sendingMessageDeadline": "2026-06-16T00:00:00",
+      "nav": 354.39,
+      "gav": 360.41
+    },
+    {
+      "securityId": 1235365,
+      "securityName": "01/26 LSTR MUHF",
+      "createdDate": "2026-01-29T00:00:00",
+      "beginDate": "2026-06-01T00:00:00",
+      "endDate": "2026-06-30T00:00:00",
+      "sendingMessageDeadline": "2026-06-16T00:00:00",
+      "nav": 350.86,
+      "gav": 360.41
+    },
+    {
+      "securityId": 1233857,
+      "securityName": "12/25 LSTR MUHF",
+      "createdDate": "2025-12-31T00:00:00",
+      "beginDate": "2026-06-01T00:00:00",
+      "endDate": "2026-06-30T00:00:00",
+      "sendingMessageDeadline": "2026-06-16T00:00:00",
+      "nav": 346.15,
+      "gav": 360.41
+    },
+    {
+      "securityId": 1194869,
+      "securityName": "03/23 LSTR MUHF",
+      "createdDate": "2023-03-30T00:00:00",
+      "beginDate": "2026-06-01T00:00:00",
+      "endDate": "2026-06-30T00:00:00",
+      "sendingMessageDeadline": "2026-06-16T00:00:00",
+      "nav": 346.15,
+      "gav": 360.41
+    }
+  ],
+  "deleted": false,
+  "mutualFundSubType": 0,
+  "mergingLiquidationStatus": null,
+  "managerId": 10031,
+  "managerName": "HAREL",
+  "trusteeId": 10013,
+  "trusteeName": "UBANK",
+  "managementFee": 1.5,
+  "trusteeFee": 0.04,
+  "variableFee": null,
+  "purchasePrice": null,
+  "redemptionPrice": 100,
+  "ratesAsOf": "2023-03-26",
+  "assetValueNISMillions": 1244.3,
+  "assetValueAsOf": "2026-05-28T00:00:00",
+  "saleLoad": 0,
+  "taxStatusName": "Tax Exempt",
+  "isInternational": false,
+  "distributionCommissionName": "0.35%",
+  "paymentPolicyName": "No Obligation to Distribute Income Payment",
+  "designatedHours": "Mon-Thu - 16:00",
+  "tradingSuspendDescription": null,
+  "lastProspectusReportId": 1511281,
+  "lastAnnualReportId": 1695310,
+  "lastMonthlyReportId": 1736993,
+  "fundTransition": null,
+  "exposureProfile": {
+    "shareSymbol": "4",
+    "fxSymbol": "D",
+    "sharesDesc": "Up to 120% of the fund's NAV",
+    "fxDesc": "Up to 120% of the fund's NAV"
+  },
+  "classification": {
+    "major": "Hedge fund",
+    "main": null,
+    "secondary": null
+  },
+  "features": [
+    {
+      "title": "Unlimited, foreign securities",
+      "enabled": true
+    },
+    {
+      "title": "Leveraged",
+      "enabled": false
+    },
+    {
+      "title": "Tracking fund, by investment policy",
+      "enabled": false
+    },
+    {
+      "title": "Reverse exposure fund, by investment policy",
+      "enabled": false
+    },
+    {
+      "title": "Fund follows portfolio of",
+      "enabled": false
+    },
+    {
+      "title": "Fixed dates fund",
+      "enabled": true
+    },
+    {
+      "title": "Fund units denominated in dollars",
+      "enabled": false
+    },
+    {
+      "title": "International investments fund – main currency",
+      "enabled": false
+    },
+    {
+      "title": "International investments fund – tax exempt for foreign residents",
+      "enabled": false
+    },
+    {
+      "title": "Kosher Fund",
+      "enabled": false
+    }
+  ],
+  "yields": {
+    "dueDate": "2023-03-26",
+    "dayYield": null,
+    "dayYieldAvg": 0,
+    "dayYieldRemarkType": null,
+    "monthYield": null,
+    "monthYieldAvg": 0,
+    "monthYieldRemarkType": null,
+    "yearYield": null,
+    "yearYieldAvg": 0,
+    "yearYieldRemarkType": null,
+    "last12MonthYield": null,
+    "last12MonthYieldAvg": 0,
+    "last12MonthYieldRemarkType": null,
+    "standardDeviation": null,
+    "standardDeviationRemarkType": null
+  },
+  "underlyingAssets": [
+    {
+      "name": "Other",
+      "indexId": null,
+      "weight": 100
+    }
+  ],
+  "upcomingEvents": [],
+  "estimatedYield": null
+}

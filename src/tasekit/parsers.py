@@ -196,6 +196,141 @@ def parse_maya_fund_csv(csv_text: str) -> pd.DataFrame:
     return result
 
 
+def parse_hedge_fund_history(rows: list[dict]) -> pd.DataFrame:
+    """Parse mutual hedge-fund history rows (JSON) into a DataFrame.
+
+    Each row is ``{fundId, tradeDate, purchasePrice, sellPrice}`` as returned
+    by ``funds/hedge/{id}/history``.
+
+    Returns:
+        DataFrame with a ``DatetimeIndex`` ("Date", ascending) and columns
+        ``Gross`` (purchase price / שער יחידה ברוטו) and ``Net`` (redemption
+        price / שער יחידה נטו).
+
+    Raises:
+        TaseParsingError: If *rows* is empty or cannot be parsed.
+    """
+    if not rows:
+        raise TaseParsingError("Hedge-fund history contained no rows")
+
+    try:
+        df = pd.DataFrame(rows)
+        result = pd.DataFrame()
+        result["Date"] = pd.to_datetime(df["tradeDate"])
+        result["Gross"] = pd.to_numeric(df["purchasePrice"], errors="coerce")
+        result["Net"] = pd.to_numeric(df["sellPrice"], errors="coerce")
+    except (KeyError, ValueError) as exc:
+        raise TaseParsingError(f"Failed to parse hedge-fund history: {exc}") from exc
+
+    result = result.dropna(subset=["Net"])
+    result = result.sort_values("Date").reset_index(drop=True)
+    result = result.set_index("Date")
+
+    if result.empty:
+        raise TaseParsingError("Hedge-fund history contained no valid rows")
+
+    return result
+
+
+def parse_hedge_fund_list(rows: list[dict]) -> pd.DataFrame:
+    """Parse the mutual hedge-fund listing (JSON) into a DataFrame.
+
+    Each row is a fund summary as returned by ``funds/hedge`` (the listing that
+    backs the Maya hedge-funds page).
+
+    Returns:
+        DataFrame indexed by ``Fund ID`` (string) with columns ``Name``,
+        ``Manager``, ``Trustee``, ``Management Fee``, ``Success Fee``,
+        ``Trustee Fee``, ``AUM`` (assets under management, NIS millions),
+        ``Tax Status`` and ``Classification``.  Sorted ascending by fund ID.
+
+    Raises:
+        TaseParsingError: If *rows* is empty or cannot be parsed.
+    """
+    if not rows:
+        raise TaseParsingError("Hedge-fund list contained no rows")
+
+    try:
+        records = [
+            {
+                "Fund ID": str(r["fundId"]),
+                "Name": r.get("name"),
+                "Manager": r.get("managerName"),
+                "Trustee": r.get("trusteeName"),
+                "Management Fee": r.get("managementFee"),
+                "Success Fee": r.get("successFee"),
+                "Trustee Fee": r.get("trusteeFee"),
+                "AUM": r.get("assetValue"),
+                "Tax Status": r.get("taxStatusName"),
+                "Classification": (r.get("classification") or {}).get("major"),
+            }
+            for r in rows
+        ]
+    except (KeyError, TypeError) as exc:
+        raise TaseParsingError(f"Failed to parse hedge-fund list: {exc}") from exc
+
+    result = pd.DataFrame.from_records(records)
+    result = result.sort_values("Fund ID", key=lambda s: s.astype(int))
+    return result.set_index("Fund ID")
+
+
+def add_hedge_fund_adj_close(df: pd.DataFrame, *, tol: float = 1e-4) -> pd.DataFrame:
+    """Add a continuous ``Adj Close`` column to a hedge-fund history frame.
+
+    A new monthly series is minted for the fund each month; within a fee
+    period the net (redemption) price drifts below the gross price as
+    management and success fees accrue.  At each year-end crystallization the
+    fees are realised: holdings convert into the oldest series, the per-unit
+    net price *resets up* to the gross, and the unit count is scaled by
+    ``net/gross`` to preserve value.
+
+    The raw ``Net`` series therefore contains an upward jump at every reset
+    that is not a real return.  This builds a forward total-return index that
+    replaces each reset step's ratio with 1 (value is preserved across the
+    conversion), then rescales it so the most recent ``Adj Close`` equals the
+    most recent raw ``Net`` (yfinance "recent = actual" convention).
+
+    A crystallization is identified by three conditions: the step crosses a
+    calendar-year boundary, net was previously accruing fees (net < gross),
+    and net has jumped up to meet gross.  Requiring a year crossing avoids a
+    false positive when a success-fee fund's gross falls below its high-water
+    mark mid-year — the success fee zeroes out so net rises to meet gross, but
+    no unit conversion happens and the (genuine, often negative) return must
+    not be discarded.
+
+    Args:
+        df: Output of :func:`parse_hedge_fund_history` (needs ``Gross`` and
+            ``Net``, ascending by date).
+        tol: Relative tolerance for detecting ``net == gross``.
+
+    Returns:
+        A copy of *df* with an added ``Adj Close`` column.  When the frame has
+        a single row, ``Adj Close`` equals ``Net``.
+    """
+    result = df.copy()
+    net = result["Net"].to_numpy(dtype=float)
+    gross = result["Gross"].to_numpy(dtype=float)
+    dates = result.index
+    n = len(net)
+
+    if n == 0:
+        result["Adj Close"] = pd.Series(dtype=float)
+        return result
+
+    tr = [1.0] * n
+    for i in range(1, n):
+        crosses_year = dates[i - 1].year < dates[i].year
+        net_was_below = net[i - 1] < gross[i - 1] * (1 - tol)
+        net_meets_gross = net[i] >= gross[i] * (1 - tol)
+        is_reset = crosses_year and net_was_below and net_meets_gross
+        ratio = 1.0 if is_reset else (net[i] / net[i - 1] if net[i - 1] else 1.0)
+        tr[i] = tr[i - 1] * ratio
+
+    scale = net[-1] / tr[-1] if tr[-1] else 1.0
+    result["Adj Close"] = [v * scale for v in tr]
+    return result
+
+
 def parse_index_eod_csv(csv_text: str) -> pd.DataFrame:
     """Parse a TASE index historical-EOD CSV into a DataFrame.
 

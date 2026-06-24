@@ -187,8 +187,23 @@ No WAF — all tested endpoints accessible. Different `Origin`/`Referer` headers
 |----------|--------|-------------|
 | `funds/mutual/{fundId}` | GET | Full mutual fund details — name, type, ISIN, manager, fees, yields, classification, exposure profile, underlying assets. |
 | `funds/mutual/{fundId}/history/file` | POST | Mutual fund NAV history CSV. Body: `{pageSize, pageNumber, period, fromDate, toDate}`. Supports arbitrary date ranges. |
-| `funds/hedge/{fundId}/history/file` | POST | Hedge fund NAV history (same structure). |
+| `funds/hedge` | POST | Full mutual **hedge** fund **listing** (backs the `/he/funds/hedge-funds` page). Body `{pageSize, pageNumber}` → list of fund summaries (`fundId`, `name`, `managerName`, `trusteeName`, fees, `assetValue`, `taxStatusName`, `classification`). No total-count envelope; `pageSize` must be 1–30; paginate until a short/empty page. |
+| `funds/metadata/hedge` | GET | Hedge-fund **listing filters**: `fundsManagers`, `fundsTrustees`, `fundTypes` (key/value option lists). |
+| `funds/hedge/{fundId}` | GET | Mutual **hedge** fund details — fees (`successFee`, `managementFee`), redemption schedule, and `securityRedemptions[]` (currently redeemable monthly series with `nav`/`gav`). |
+| `funds/metadata/{fundId}/history-hedge-fund` | GET | Hedge-fund history-page metadata: default `fromDate`/`toDate` and `securities: [{key=securityId, value="name MM/YY"}]` — every monthly series. Lowest `key` = oldest anchor series. |
+| `funds/hedge/{fundId}/history` | POST | Hedge-fund price history (JSON). Body `{pageSize, pageNumber}` → current redemption **snapshot** (all live series, latest date). Add `securityId`, `fromDate`, `toDate` → that series' monthly **time series** of `{tradeDate, purchasePrice (gross/GAV), sellPrice (net/NAV)}`. `pageSize` must be 1–30; paginate for longer histories. |
+| `funds/hedge/{fundId}/history/file` | POST | Hedge fund NAV history CSV (legacy/untested via this client). |
 | `funds/etf/{fundId}/history/file` | POST | ETF fund history — untested with real ETF ID. |
+
+#### Hedge-fund mechanics (see `docs/HEDGE_FUNDS_PLAN.md` §1)
+
+A new `securityId` is minted each month. Within a calendar-year fee period the
+net price (`sellPrice`) drifts below the gross (`purchasePrice`) as management +
+success fees accrue. At year-end, fees crystallize: holdings convert into the
+**oldest** series, net resets up to gross, and unit count scales by `net/gross`.
+The oldest series therefore has a continuous full-life history and is the
+performance anchor; its raw net series has an upward reset jump each January
+that `add_hedge_fund_adj_close()` removes to build a true net-of-fees return.
 
 ---
 

@@ -40,6 +40,12 @@ PTYPE_MAP: dict[int, int] = {
 # Maximum years the API can return.
 MAX_HISTORY_YEARS = 5
 
+# Maya fundTypeId for mutual hedge funds (קרן גידור בנאמנות).
+MAYA_HEDGE_FUND_TYPE_ID = 6
+
+# Maximum pageSize accepted by the Maya hedge-fund history endpoint.
+MAYA_HEDGE_MAX_PAGE_SIZE = 30
+
 # Default history span when the caller does not specify years or start/end.
 DEFAULT_HISTORY_YEARS = 2
 

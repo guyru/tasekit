@@ -1,0 +1,284 @@
+[
+  {
+    "fundId": 1194141,
+    "name": "Harel Mul Str Mut He Fnd",
+    "longName": null,
+    "fundType": null,
+    "fundTypeId": null,
+    "isin": null,
+    "managerName": "HAREL",
+    "managerId": 10031,
+    "trusteeName": "UBANK",
+    "taxStatusName": "Tax Exempt",
+    "mutualFundSubType": 0,
+    "managementFee": 1.5,
+    "trusteeFee": 0.04,
+    "successFee": 20.0,
+    "assetValue": 1244.3,
+    "purchasePrice": null,
+    "redemptionPrice": 100.0,
+    "ratesAsOf": null,
+    "distributionCommissionName": "0.35%",
+    "isInternational": false,
+    "dayYield": null,
+    "dayYieldRemarkType": null,
+    "monthYield": null,
+    "monthYieldRemarkType": null,
+    "yearYield": null,
+    "yearYieldRemarkType": null,
+    "last12MonthYield": null,
+    "last12MonthYieldRemarkType": null,
+    "standardDeviation": null,
+    "standardDeviationRemarkType": null,
+    "exposureProfile": {
+      "shareSymbol": "4",
+      "fxSymbol": "D",
+      "sharesDesc": "Up to 120% of the fund's NAV",
+      "fxDesc": "Up to 120% of the fund's NAV"
+    },
+    "features": [
+      {
+        "title": "Unlimited, foreign securities",
+        "enabled": true
+      },
+      {
+        "title": "Leveraged",
+        "enabled": false
+      },
+      {
+        "title": "Tracking fund, by investment policy",
+        "enabled": false
+      },
+      {
+        "title": "Reverse exposure fund, by investment policy",
+        "enabled": false
+      },
+      {
+        "title": "Fund follows portfolio of",
+        "enabled": false
+      },
+      {
+        "title": "Fixed dates fund",
+        "enabled": true
+      },
+      {
+        "title": "Fund units denominated in dollars",
+        "enabled": false
+      },
+      {
+        "title": "International investments fund – main currency",
+        "enabled": false
+      },
+      {
+        "title": "International investments fund – tax exempt for foreign residents",
+        "enabled": false
+      },
+      {
+        "title": "Kosher Fund",
+        "enabled": false
+      }
+    ],
+    "classification": {
+      "major": "Hedge fund",
+      "main": null,
+      "secondary": null
+    },
+    "underlyingAssets": [
+      {
+        "name": "Other",
+        "indexId": null,
+        "weight": 100.0
+      }
+    ],
+    "featuresText": "Unlimited, foreign securities,Fixed dates fund",
+    "underlyingAssetsText": "Other"
+  },
+  {
+    "fundId": 1194158,
+    "name": "Sigma Long Short Eq. MHF",
+    "longName": null,
+    "fundType": null,
+    "fundTypeId": null,
+    "isin": null,
+    "managerName": "SIGMA ",
+    "managerId": 10048,
+    "trusteeName": "UBANK",
+    "taxStatusName": "Tax Exempt",
+    "mutualFundSubType": 0,
+    "managementFee": 1.35,
+    "trusteeFee": 0.04,
+    "successFee": 20.0,
+    "assetValue": 137.1,
+    "purchasePrice": null,
+    "redemptionPrice": 100.0,
+    "ratesAsOf": null,
+    "distributionCommissionName": "0.35%",
+    "isInternational": false,
+    "dayYield": null,
+    "dayYieldRemarkType": null,
+    "monthYield": null,
+    "monthYieldRemarkType": null,
+    "yearYield": null,
+    "yearYieldRemarkType": null,
+    "last12MonthYield": null,
+    "last12MonthYieldRemarkType": null,
+    "standardDeviation": null,
+    "standardDeviationRemarkType": null,
+    "exposureProfile": {
+      "shareSymbol": "5",
+      "fxSymbol": "E",
+      "sharesDesc": "Up to 200% of the fund's NAV",
+      "fxDesc": "Up to 200% of the fund's NAV"
+    },
+    "features": [
+      {
+        "title": "Unlimited, foreign securities",
+        "enabled": true
+      },
+      {
+        "title": "Leveraged",
+        "enabled": false
+      },
+      {
+        "title": "Tracking fund, by investment policy",
+        "enabled": false
+      },
+      {
+        "title": "Reverse exposure fund, by investment policy",
+        "enabled": false
+      },
+      {
+        "title": "Fund follows portfolio of",
+        "enabled": false
+      },
+      {
+        "title": "Fixed dates fund",
+        "enabled": true
+      },
+      {
+        "title": "Fund units denominated in dollars",
+        "enabled": false
+      },
+      {
+        "title": "International investments fund – main currency",
+        "enabled": false
+      },
+      {
+        "title": "International investments fund – tax exempt for foreign residents",
+        "enabled": false
+      },
+      {
+        "title": "Kosher Fund",
+        "enabled": false
+      }
+    ],
+    "classification": {
+      "major": "Hedge fund",
+      "main": null,
+      "secondary": null
+    },
+    "underlyingAssets": [
+      {
+        "name": "Other",
+        "indexId": null,
+        "weight": 100.0
+      }
+    ],
+    "featuresText": "Unlimited, foreign securities,Fixed dates fund",
+    "underlyingAssetsText": "Other"
+  },
+  {
+    "fundId": 1194166,
+    "name": "Sigma Long Short Bnd MHF",
+    "longName": null,
+    "fundType": null,
+    "fundTypeId": null,
+    "isin": null,
+    "managerName": "SIGMA ",
+    "managerId": 10048,
+    "trusteeName": "UBANK",
+    "taxStatusName": "Tax Exempt",
+    "mutualFundSubType": 0,
+    "managementFee": 0.79,
+    "trusteeFee": 0.04,
+    "successFee": 15.0,
+    "assetValue": 113.0,
+    "purchasePrice": null,
+    "redemptionPrice": 100.0,
+    "ratesAsOf": null,
+    "distributionCommissionName": "0.35%",
+    "isInternational": false,
+    "dayYield": null,
+    "dayYieldRemarkType": null,
+    "monthYield": null,
+    "monthYieldRemarkType": null,
+    "yearYield": null,
+    "yearYieldRemarkType": null,
+    "last12MonthYield": null,
+    "last12MonthYieldRemarkType": null,
+    "standardDeviation": null,
+    "standardDeviationRemarkType": null,
+    "exposureProfile": {
+      "shareSymbol": "2",
+      "fxSymbol": "B",
+      "sharesDesc": "Up to 30% of the fund's NAV",
+      "fxDesc": "Up to 30% of the fund's NAV"
+    },
+    "features": [
+      {
+        "title": "Unlimited, foreign securities",
+        "enabled": true
+      },
+      {
+        "title": "Leveraged",
+        "enabled": false
+      },
+      {
+        "title": "Tracking fund, by investment policy",
+        "enabled": false
+      },
+      {
+        "title": "Reverse exposure fund, by investment policy",
+        "enabled": false
+      },
+      {
+        "title": "Fund follows portfolio of",
+        "enabled": false
+      },
+      {
+        "title": "Fixed dates fund",
+        "enabled": true
+      },
+      {
+        "title": "Fund units denominated in dollars",
+        "enabled": false
+      },
+      {
+        "title": "International investments fund – main currency",
+        "enabled": false
+      },
+      {
+        "title": "International investments fund – tax exempt for foreign residents",
+        "enabled": false
+      },
+      {
+        "title": "Kosher Fund",
+        "enabled": false
+      }
+    ],
+    "classification": {
+      "major": "Hedge fund",
+      "main": null,
+      "secondary": null
+    },
+    "underlyingAssets": [
+      {
+        "name": "Other",
+        "indexId": null,
+        "weight": 100.0
+      }
+    ],
+    "featuresText": "Unlimited, foreign securities,Fixed dates fund",
+    "underlyingAssetsText": "Other"
+  }
+]

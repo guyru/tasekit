@@ -297,3 +297,118 @@ class TestTaseClient:
         req_body = json.loads(responses.calls[0].request.body)
         assert req_body["FilterData"]["oId"] == "142"
         assert req_body["FilterData"]["pType"] == "4"
+
+
+class TestHedgeFundEndpoints:
+    """Tests for the Maya hedge-fund methods of :class:`TaseClient`."""
+
+    @responses.activate
+    def test_fetch_hedge_fund_list(self) -> None:
+        url = f"{MAYA_BASE_URL}/funds/hedge"
+        responses.add(
+            responses.POST, url,
+            json=[{"fundId": 1194141, "name": "Harel Mul Str Mut He Fnd"}],
+            status=200,
+        )
+
+        client = TaseClient()
+        result = client.fetch_hedge_fund_list(page_number=2)
+
+        assert result[0]["fundId"] == 1194141
+        import json
+        body = json.loads(responses.calls[0].request.body)
+        assert body == {"pageSize": 30, "pageNumber": 2}
+        assert "maya.tase.co.il" in responses.calls[0].request.headers["Origin"]
+
+    @responses.activate
+    def test_fetch_hedge_fund_list_error_envelope(self) -> None:
+        url = f"{MAYA_BASE_URL}/funds/hedge"
+        responses.add(
+            responses.POST, url,
+            json={"errors": {"PageSize": "must be between 1 and 30"}},
+            status=200,
+        )
+
+        client = TaseClient()
+        with pytest.raises(TaseNetworkError):
+            client.fetch_hedge_fund_list(page_size=100)
+
+    @responses.activate
+    def test_fetch_hedge_fund_detail(self) -> None:
+        url = f"{MAYA_BASE_URL}/funds/hedge/1194141"
+        responses.add(
+            responses.GET, url,
+            json={"fundId": 1194141, "successFee": 20.0}, status=200,
+        )
+
+        client = TaseClient()
+        result = client.fetch_hedge_fund_detail("1194141")
+
+        assert result["fundId"] == 1194141
+        req = responses.calls[0].request
+        assert "maya.tase.co.il" in req.headers["Origin"]
+
+    @responses.activate
+    def test_fetch_hedge_fund_metadata(self) -> None:
+        url = f"{MAYA_BASE_URL}/funds/metadata/1194141/history-hedge-fund"
+        responses.add(
+            responses.GET, url,
+            json={"securities": [{"key": 1194869, "value": "x 03/23"}]},
+            status=200,
+        )
+
+        client = TaseClient()
+        result = client.fetch_hedge_fund_metadata("1194141")
+
+        assert result["securities"][0]["key"] == 1194869
+
+    @responses.activate
+    def test_fetch_hedge_fund_history_snapshot(self) -> None:
+        url = f"{MAYA_BASE_URL}/funds/hedge/1194141/history"
+        responses.add(
+            responses.POST, url,
+            json=[{"fundId": "01242023", "tradeDate": "2026-05-28T00:00:00",
+                   "purchasePrice": 360.41, "sellPrice": 360.41}],
+            status=200,
+        )
+
+        client = TaseClient()
+        result = client.fetch_hedge_fund_history("1194141")
+
+        assert len(result) == 1
+        import json
+        body = json.loads(responses.calls[0].request.body)
+        assert body == {"pageSize": 30, "pageNumber": 1}
+
+    @responses.activate
+    def test_fetch_hedge_fund_history_series(self) -> None:
+        url = f"{MAYA_BASE_URL}/funds/hedge/1194141/history"
+        responses.add(responses.POST, url, json=[], status=200)
+
+        client = TaseClient()
+        client.fetch_hedge_fund_history(
+            "1194141",
+            security_id="1194869",
+            from_date="2023-01-01T00:00:00.000Z",
+            to_date="2026-06-30T00:00:00.000Z",
+            page_number=2,
+        )
+
+        import json
+        body = json.loads(responses.calls[0].request.body)
+        assert body["securityId"] == 1194869  # coerced to int
+        assert body["fromDate"] == "2023-01-01T00:00:00.000Z"
+        assert body["pageNumber"] == 2
+
+    @responses.activate
+    def test_fetch_hedge_fund_history_error_envelope(self) -> None:
+        url = f"{MAYA_BASE_URL}/funds/hedge/1194141/history"
+        responses.add(
+            responses.POST, url,
+            json={"errors": {"PageSize": "must be between 1 and 30"}},
+            status=200,
+        )
+
+        client = TaseClient()
+        with pytest.raises(TaseNetworkError):
+            client.fetch_hedge_fund_history("1194141", page_size=100)

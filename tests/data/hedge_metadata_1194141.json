@@ -1,0 +1,162 @@
+{
+  "fromDate": "2025-12-22",
+  "toDate": "2026-06-22",
+  "securities": [
+    {
+      "key": 1194869,
+      "value": "03/23 LSTR MUHF"
+    },
+    {
+      "key": 1195668,
+      "value": "04/23 LSTR MUHF"
+    },
+    {
+      "key": 1196336,
+      "value": "05/23 LSTR MUHF"
+    },
+    {
+      "key": 1197383,
+      "value": "06/23 LSTR MUHF"
+    },
+    {
+      "key": 1198449,
+      "value": "07/23 LSTR MUHF"
+    },
+    {
+      "key": 1199272,
+      "value": "08/23 LSTR MUHF"
+    },
+    {
+      "key": 1200013,
+      "value": "09/23 LSTR MUHF"
+    },
+    {
+      "key": 1200534,
+      "value": "10/23 LSTR MUHF"
+    },
+    {
+      "key": 1201276,
+      "value": "11/23 LSTR MUHF"
+    },
+    {
+      "key": 1202399,
+      "value": "12/23 LSTR MUHF"
+    },
+    {
+      "key": 1203645,
+      "value": "01/24 LSTR MUHF"
+    },
+    {
+      "key": 1204494,
+      "value": "02/24 LSTR MUHF"
+    },
+    {
+      "key": 1205210,
+      "value": "03/24 LSTR MUHF"
+    },
+    {
+      "key": 1206135,
+      "value": "04/24 LSTR MUHF"
+    },
+    {
+      "key": 1207265,
+      "value": "05/24 LSTR MUHF"
+    },
+    {
+      "key": 1208131,
+      "value": "06/24 LSTR MUHF"
+    },
+    {
+      "key": 1209568,
+      "value": "07/24 LSTR MUHF"
+    },
+    {
+      "key": 1210723,
+      "value": "08/24 LSTR MUHF"
+    },
+    {
+      "key": 1212067,
+      "value": "09/24 LSTR MUHF"
+    },
+    {
+      "key": 1212984,
+      "value": "10/24 LSTR MUHF"
+    },
+    {
+      "key": 1214196,
+      "value": "11/24 LSTR MUHF"
+    },
+    {
+      "key": 1215417,
+      "value": "12/24 LSTR MUHF"
+    },
+    {
+      "key": 1216779,
+      "value": "01/25 LSTR MUHF"
+    },
+    {
+      "key": 1218320,
+      "value": "02/25 LSTR MUHF"
+    },
+    {
+      "key": 1219575,
+      "value": "03/25 LSTR MUHF"
+    },
+    {
+      "key": 1220847,
+      "value": "04/25 LSTR MUHF"
+    },
+    {
+      "key": 1222611,
+      "value": "05/25 LSTR MUHF"
+    },
+    {
+      "key": 1224138,
+      "value": "06/25 LSTR MUHF"
+    },
+    {
+      "key": 1226430,
+      "value": "07/25 LSTR MUHF"
+    },
+    {
+      "key": 1227875,
+      "value": "08/25 LSTR MUHF"
+    },
+    {
+      "key": 1229590,
+      "value": "09/25 LSTR MUHF"
+    },
+    {
+      "key": 1230796,
+      "value": "10/25 LSTR MUHF"
+    },
+    {
+      "key": 1232495,
+      "value": "11/25 LSTR MUHF"
+    },
+    {
+      "key": 1233857,
+      "value": "12/25 LSTR MUHF"
+    },
+    {
+      "key": 1235365,
+      "value": "01/26 LSTR MUHF"
+    },
+    {
+      "key": 1237262,
+      "value": "02/26 LSTR MUHF"
+    },
+    {
+      "key": 1238716,
+      "value": "03/26 LSTR MUHF"
+    },
+    {
+      "key": 1240100,
+      "value": "04/26 LSTR MUHF"
+    },
+    {
+      "key": 1242023,
+      "value": "05/26 LSTR MUHF"
+    }
+  ]
+}

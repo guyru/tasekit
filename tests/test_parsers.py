@@ -6,9 +6,12 @@ import pandas as pd
 import pytest
 
 from tasekit.parsers import (
+    add_hedge_fund_adj_close,
     extract_security_name,
     parse_eod_csv,
     parse_etf_eod_csv,
+    parse_hedge_fund_history,
+    parse_hedge_fund_list,
     parse_index_eod_csv,
     parse_maya_fund_csv,
 )
@@ -253,3 +256,164 @@ class TestParseIndexEodCsv:
         csv = "title\nrange\nA,B\n1,2\n"
         with pytest.raises(TaseParsingError, match="too few columns"):
             parse_index_eod_csv(csv)
+
+
+class TestParseHedgeFundHistory:
+    """Tests for :func:`parse_hedge_fund_history`."""
+
+    def test_basic_shape(self) -> None:
+        rows = [
+            {"fundId": "01194869", "tradeDate": "2026-05-28T00:00:00",
+             "purchasePrice": 360.41, "sellPrice": 346.15},
+            {"fundId": "01194869", "tradeDate": "2026-04-30T00:00:00",
+             "purchasePrice": 349.94, "sellPrice": 337.78},
+        ]
+        df = parse_hedge_fund_history(rows)
+
+        assert list(df.columns) == ["Gross", "Net"]
+        assert df.index.name == "Date"
+        # Sorted ascending.
+        assert df.index[0] < df.index[1]
+        assert df["Net"].iloc[-1] == 346.15
+
+    def test_empty_raises(self) -> None:
+        with pytest.raises(TaseParsingError):
+            parse_hedge_fund_history([])
+
+    def test_real_anchor_fixture(self, hedge_anchor_history: list) -> None:
+        df = parse_hedge_fund_history(hedge_anchor_history)
+        assert len(df) == 41
+        assert df["Gross"].iloc[0] == 100.0
+
+
+class TestParseHedgeFundList:
+    """Tests for :func:`parse_hedge_fund_list`."""
+
+    def test_basic_shape(self) -> None:
+        rows = [
+            {"fundId": 1194166, "name": "B", "managerName": "SIGMA",
+             "trusteeName": "HERMETIC", "managementFee": 2.0, "successFee": 20.0,
+             "trusteeFee": 0.04, "assetValue": 113.0, "taxStatusName": "Tax Exempt",
+             "classification": {"major": "Hedge fund"}},
+            {"fundId": 1194141, "name": "A", "managerName": "HAREL",
+             "trusteeName": "UBANK", "managementFee": 1.5, "successFee": 20.0,
+             "trusteeFee": 0.04, "assetValue": 1244.3, "taxStatusName": "Tax Exempt",
+             "classification": {"major": "Hedge fund"}},
+        ]
+        df = parse_hedge_fund_list(rows)
+
+        assert df.index.name == "Fund ID"
+        assert list(df.columns) == [
+            "Name", "Manager", "Trustee", "Management Fee", "Success Fee",
+            "Trustee Fee", "AUM", "Tax Status", "Classification",
+        ]
+        # Sorted ascending by numeric fund ID.
+        assert list(df.index) == ["1194141", "1194166"]
+        assert df.loc["1194141", "Manager"] == "HAREL"
+        assert df.loc["1194141", "AUM"] == 1244.3
+
+    def test_handles_missing_classification(self) -> None:
+        df = parse_hedge_fund_list([{"fundId": 1, "name": "X", "classification": None}])
+        assert df.loc["1", "Classification"] is None
+
+    def test_empty_raises(self) -> None:
+        with pytest.raises(TaseParsingError):
+            parse_hedge_fund_list([])
+
+    def test_real_fixture(self, hedge_list_page: list) -> None:
+        df = parse_hedge_fund_list(hedge_list_page)
+        assert len(df) == 3
+        assert "1194141" in df.index
+
+
+class TestAddHedgeFundAdjClose:
+    """Tests for :func:`add_hedge_fund_adj_close`."""
+
+    def test_removes_reset_jumps(self, hedge_anchor_history: list) -> None:
+        df = add_hedge_fund_adj_close(parse_hedge_fund_history(hedge_anchor_history))
+
+        # Gross is continuous: full-life ratio ~3.6041.
+        gross_ratio = df["Gross"].iloc[-1] / df["Gross"].iloc[0]
+        assert gross_ratio == pytest.approx(3.6041, abs=1e-3)
+
+        # Net total return with reset jumps removed ~2.952.
+        net_tr = df["Adj Close"].iloc[-1] / df["Adj Close"].iloc[0]
+        assert net_tr == pytest.approx(2.952, abs=1e-3)
+
+        # Recent == actual (yfinance convention).
+        assert df["Adj Close"].iloc[-1] == pytest.approx(df["Net"].iloc[-1])
+
+    def test_adj_close_has_no_reset_spike(self, hedge_anchor_history: list) -> None:
+        df = add_hedge_fund_adj_close(parse_hedge_fund_history(hedge_anchor_history))
+        # The raw net jumps +9.6% across 2025-12-31 -> 2026-01-01; Adj Close
+        # must not (value is preserved across crystallization).
+        adj = df["Adj Close"]
+        step = adj.loc["2026-01-01"] / adj.loc["2025-12-31"]
+        assert step == pytest.approx(1.0, abs=1e-6)
+
+    def test_single_row(self) -> None:
+        df = parse_hedge_fund_history(
+            [{"fundId": "1", "tradeDate": "2026-05-28", "purchasePrice": 10.0,
+              "sellPrice": 9.0}]
+        )
+        out = add_hedge_fund_adj_close(df)
+        assert out["Adj Close"].iloc[0] == 9.0
+
+    def test_mid_period_net_meets_gross_is_not_a_reset(self) -> None:
+        """A success-fee fund whose gross falls to its high-water mark mid-year
+        has ``net == gross`` with *no* crystallization.  The genuine loss must
+        be kept, so net return can never exceed gross return (fee drag >= 0)."""
+        rows = [
+            # Inception.
+            {"fundId": "1", "tradeDate": "2025-01-01", "purchasePrice": 100.0,
+             "sellPrice": 100.0},
+            # Gross rises, success + management fees accrue (net < gross).
+            {"fundId": "1", "tradeDate": "2025-02-27", "purchasePrice": 102.34,
+             "sellPrice": 101.87},
+            # Gross *falls* 6.9% below the high-water mark: success fee zeroes
+            # out so net rises to meet gross, but this is NOT a reset.
+            {"fundId": "1", "tradeDate": "2025-03-31", "purchasePrice": 95.29,
+             "sellPrice": 95.29},
+        ]
+        df = add_hedge_fund_adj_close(parse_hedge_fund_history(rows))
+
+        # The -6.5% net move must survive (old bug froze Adj Close flat).
+        adj_step = df["Adj Close"].iloc[-1] / df["Adj Close"].iloc[-2]
+        assert adj_step == pytest.approx(95.29 / 101.87, abs=1e-6)
+
+        # Net return must not exceed gross return (net = gross - fees).
+        gross_ratio = df["Gross"].iloc[-1] / df["Gross"].iloc[0]
+        net_ratio = df["Adj Close"].iloc[-1] / df["Adj Close"].iloc[0]
+        assert net_ratio <= gross_ratio + 1e-9
+
+    def test_real_year_end_reset_is_removed(self) -> None:
+        """A true crystallization (net jumps up to meet gross at the year boundary)
+        is detected and removed."""
+        rows = [
+            {"fundId": "1", "tradeDate": "2025-12-01", "purchasePrice": 150.0,
+             "sellPrice": 140.0},
+            {"fundId": "1", "tradeDate": "2025-12-31", "purchasePrice": 160.0,
+             "sellPrice": 148.0},
+            # One-day-apart reset: gross flat, net jumps up to gross.
+            {"fundId": "1", "tradeDate": "2026-01-01", "purchasePrice": 160.0,
+             "sellPrice": 160.0},
+        ]
+        df = add_hedge_fund_adj_close(parse_hedge_fund_history(rows))
+        step = df["Adj Close"].loc["2026-01-01"] / df["Adj Close"].loc["2025-12-31"]
+        assert step == pytest.approx(1.0, abs=1e-6)
+
+    def test_year_end_reset_detected_when_gross_moves(self) -> None:
+        """A crystallization where gross moved >0.5% at the year boundary must
+        still be detected.  The old gross_flat check caused this to be missed,
+        inflating Adj Close and making net CAGR > gross CAGR."""
+        rows = [
+            {"fundId": "1", "tradeDate": "2025-12-31", "purchasePrice": 160.0,
+             "sellPrice": 148.0},
+            # Reset: gross moved 0.625% (above the old 0.5% step_tol), net jumps
+            # up to the new gross.  Must still be treated as a crystallization.
+            {"fundId": "1", "tradeDate": "2026-01-01", "purchasePrice": 161.0,
+             "sellPrice": 161.0},
+        ]
+        df = add_hedge_fund_adj_close(parse_hedge_fund_history(rows))
+        step = df["Adj Close"].loc["2026-01-01"] / df["Adj Close"].loc["2025-12-31"]
+        assert step == pytest.approx(1.0, abs=1e-6)

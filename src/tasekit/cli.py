@@ -59,6 +59,23 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Use the ETF-specific endpoint (extra columns: purchase/redemption price, NAV, fees).",
     )
     hist.add_argument(
+        "--hedge",
+        action="store_true",
+        default=False,
+        help="Treat ID as a mutual hedge fund (Maya). Returns Gross/Net/Adj Close.",
+    )
+    hist.add_argument(
+        "--series",
+        default=None, metavar="SECID",
+        help="With --hedge: a specific monthly series ID (default: oldest anchor).",
+    )
+    hist.add_argument(
+        "--gross",
+        action="store_true",
+        default=False,
+        help="With --hedge: show the gross (fee-free) series instead of net Adj Close.",
+    )
+    hist.add_argument(
         "-o", "--output",
         default=None, metavar="FILE",
         help="Save output to a CSV file.",
@@ -82,9 +99,37 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     info.add_argument(
+        "--hedge",
+        action="store_true",
+        default=False,
+        help="Treat ID as a mutual hedge fund (Maya).",
+    )
+    info.add_argument(
         "-f", "--format",
         default="text", choices=["text", "json"],
         help="Output format (default: text).",
+    )
+
+    # -- list sub-command ---------------------------------------------------
+    lst = sub.add_parser(
+        "list",
+        help="List securities of a given type (currently: hedge funds).",
+    )
+    lst.add_argument(
+        "--hedge",
+        action="store_true",
+        default=False,
+        help="List all mutual hedge funds traded on TASE (Maya).",
+    )
+    lst.add_argument(
+        "-o", "--output",
+        default=None, metavar="FILE",
+        help="Save output to a CSV file.",
+    )
+    lst.add_argument(
+        "-f", "--format",
+        default="table", choices=["table", "csv", "json"],
+        help="Output format (default: table).",
     )
 
     return parser
@@ -136,23 +181,35 @@ def _cmd_history(args: argparse.Namespace) -> None:
     from tasekit.exceptions import TaseError
 
     try:
-        if _is_index_id(args.id):
+        if getattr(args, "hedge", False):
+            from tasekit import HedgeFund
+            obj = HedgeFund(args.id)
+            label = f"Hedge fund {obj.id}"
+            df = obj.history(
+                security_id=args.series,
+                years=args.years, days=args.days, start=args.start, end=args.end,
+            )
+            if getattr(args, "gross", False):
+                df = df[["Gross"]]
+        elif _is_index_id(args.id):
             from tasekit import Index
             obj = Index(args.id)
             label = f"Index {obj.id}"
+            df = obj.history(
+                years=args.years, days=args.days, start=args.start, end=args.end
+            )
         else:
             from tasekit import Security
             obj = Security(args.id)
             label = f"Security {obj.id}"
-
-        if getattr(args, 'etf', False) and not _is_index_id(args.id):
-            df = obj.etf_history(
-                years=args.years, days=args.days, start=args.start, end=args.end
-            )
-        else:
-            df = obj.history(
-                years=args.years, days=args.days, start=args.start, end=args.end
-            )
+            if getattr(args, 'etf', False):
+                df = obj.etf_history(
+                    years=args.years, days=args.days, start=args.start, end=args.end
+                )
+            else:
+                df = obj.history(
+                    years=args.years, days=args.days, start=args.start, end=args.end
+                )
     except (TaseError, ValueError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
         sys.exit(1)
@@ -164,7 +221,10 @@ def _cmd_info(args: argparse.Namespace) -> None:
     from tasekit.exceptions import TaseError
 
     try:
-        if _is_index_id(args.id):
+        if getattr(args, "hedge", False):
+            from tasekit import HedgeFund
+            data = HedgeFund(args.id).info()
+        elif _is_index_id(args.id):
             from tasekit import Index
             data = Index(args.id).info()
         else:
@@ -175,6 +235,35 @@ def _cmd_info(args: argparse.Namespace) -> None:
         sys.exit(1)
 
     _output_info(data, args.format)
+
+
+def _cmd_list(args: argparse.Namespace) -> None:
+    from tasekit.exceptions import TaseError
+
+    if not getattr(args, "hedge", False):
+        print(
+            "Error: specify a type to list, e.g. `tasekit list --hedge`.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    try:
+        from tasekit import HedgeFund
+        df = HedgeFund.list()
+    except (TaseError, ValueError) as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        sys.exit(1)
+
+    if args.output:
+        df.to_csv(args.output)
+        print(f"Saved {len(df)} hedge funds to {args.output}", file=sys.stderr)
+    elif args.format == "csv":
+        print(df.to_csv())
+    elif args.format == "json":
+        print(df.to_json(orient="index", indent=2, force_ascii=False))
+    else:
+        print(f"Hedge funds — {len(df)} listed")
+        print(df.to_string())
 
 
 # ---------------------------------------------------------------------------
@@ -217,6 +306,8 @@ def main(argv: list[str] | None = None) -> None:
         _cmd_history(args)
     elif args.command == "info":
         _cmd_info(args)
+    elif args.command == "list":
+        _cmd_list(args)
 
 
 if __name__ == "__main__":
